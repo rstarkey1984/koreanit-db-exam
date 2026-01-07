@@ -71,7 +71,6 @@ SQL을 활용하여 이를 해결할 수 있는 능력을 종합적으로 평가
 sudo mysql
 ```
 
----
 
 ### 0-2. MySQL 프롬프트에서 시험용 데이터베이스 생성
 
@@ -79,7 +78,6 @@ sudo mysql
 CREATE DATABASE examdb;
 ```
 
----
 
 ### 0-3. 시험 전용 계정 생성 및 권한 부여
 
@@ -90,8 +88,6 @@ CREATE USER 'examuser'@'localhost' IDENTIFIED BY 'Ex@m9Q2#L!!';
 ```sql
 GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';
 ```
-
----
 
 ### 0-4. MySQL Workbench 에서 DB 접속설정
 
@@ -105,7 +101,6 @@ GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';
 
 - Default Schema: `examdb`
 
----
 
 ## 0-5. 아래 문서에 있는 SQL 실행
 ### [데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](seed_data.md)
