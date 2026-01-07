@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>데이터베이스 설계 및 SQL 문제해결 시나리오 평가</title>
+  <style>
+    :root {
+      --text: #111;
+      --muted: #555;
+      --border: #ddd;
+      --bg: #fff;
+      --codebg: #f6f6f6;
+    }
+
+    body {
+      margin: 40px;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+        system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      line-height: 1.35;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-top: 42px;
+      padding-bottom: 6px;
+      border-bottom: 3px solid #000;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-top: 30px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #444;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-top: 22px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul {
+      margin: 8px 0 12px 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    blockquote {
+      margin: 14px 0;
+      padding: 10px 14px;
+      border-left: 4px solid #999;
+      background: #fafafa;
+      color: var(--muted);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 22px 0;
+    }
+
+    pre {
+      background: var(--codebg);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      overflow-x: auto;
+      border-radius: 6px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    /* Print / PDF */
+    @media print {
+      body {
+        margin: 18mm;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      h1 {
+        page-break-before: always;
+      }
+
+      h1:first-of-type {
+        page-break-before: auto;
+      }
+
+      pre {
+        page-break-inside: avoid;
+      }
+
+      ul,
+      blockquote {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <p>
+  <h1>데이터베이스 설계 및 SQL 문제해결 시나리오 평가</h1>
+  </p>
+
+  <p>
+  <h2>과목</h2>
+  </p>
+  <p>데이터베이스 설계 / SQL</p>
+
+  <p>
+  <h2>평가 유형</h2>
+  </p>
+  <p>실습 기반 문제해결 시나리오 평가</p>
+
+  <p>
+  <h2>평가 목적</h2>
+  </p>
+  <p>본 평가는 데이터베이스의 단순 SQL 문법 암기가 아닌,</p>
+  <p>실제 운영 환경에서 발생할 수 있는 문제 상황을 분석하고</p>
+  <p>SQL을 활용하여 이를 해결할 수 있는 능력을 종합적으로 평가하는 것을 목적으로 한다.</p>
+
+  <p>
+  <h2>평가 개요</h2>
+  </p>
+
+  <p>
+  <blockquote>본 평가는 사전 환경 구성부터 문제 해결까지 포함된 실습 중심 평가로 3시간으로 구성한다.</blockquote>
+  </p>
+
+  <ul>
+    <li>운영 중인 게시판 서비스의 데이터베이스를 가정한다.</li>
+  </ul>
+
+  <ul>
+    <li>수험자는 제공된 스키마 및 더미데이터를 기반으로 문제 상황을 해결한다.</li>
+  </ul>
+
+  <ul>
+    <li>데이터베이스 생성 및 권한 부여는 서버 터미널(MySQL CLI) 환경에서 수행하며, 이후 실제 데이터 작업과 문제 해결은 MySQL Workbench를 사용한다.</li>
+  </ul>
+
+  <ul>
+    <li>모든 문제는 실제 실무 환경에서 발생 가능한 시나리오를 기반으로 한다.</li>
+  </ul>
+
+  <hr />
+  <p>
+  <h1>채점 기준</h1>
+  </p>
+  <p>
+  <blockquote>본 평가는 SQL 문법 암기가 아닌 </blockquote>
+  </p>
+  <p>
+  <blockquote>운영 환경에서의 문제 분석 능력과 해결 과정을 평가한다. </blockquote>
+  </p>
+  <p>
+  <blockquote>정답 여부뿐 아니라 접근 방식·근거·검증 SQL을 함께 채점한다.</blockquote>
+  </p>
+
+  <p>
+  <h2>총점: 100점</h2>
+  </p>
+
+  <ul>
+    <li>사전 환경 구성: 20점</li>
+  </ul>
+
+  <ul>
+    <li>문제 1 (FK 삭제 문제): 20점</li>
+  </ul>
+
+  <ul>
+    <li>문제 2 (성능 문제): 20점</li>
+  </ul>
+
+  <ul>
+    <li>문제 3 (데이터 품질): 20점</li>
+  </ul>
+
+  <ul>
+    <li>문제 4 (비정규화): 20점</li>
+  </ul>
+
+
+  <p>
+  <h2>제출물 규칙</h2>
+  </p>
+
+  <ul>
+    <li>제출물은 MD 파일 형식으로 [<code>본인이름.md</code>](제출물.md) 로 제출</li>
+  </ul>
+
+  <ul>
+    <li>설명 주석은 ( <code>--</code> 로 작성)</li>
+  </ul>
+
+  <p>
+  <h2>시험 환경</h2>
+  </p>
+
+  <ul>
+    <li>OS: <code>WSL Ubuntu 24</code></li>
+  </ul>
+
+  <ul>
+    <li>DBMS: <code>MySQL 8.0.44</code></li>
+  </ul>
+
+  <ul>
+    <li>DB 서버 접속 방식</li>
+  </ul>
+
+  <ul>
+    <li>데이터베이스(스키마) 설정: 터미널(<code>MySQL 클라이언트</code>)</li>
+  </ul>
+
+  <ul>
+    <li>실습 및 문제 해결: <code>MySQL Workbench</code></li>
+  </ul>
+
+  <ul>
+    <li>클라이언트 도구: MySQL Workbench (로컬 PC)</li>
+  </ul>
+
+  <hr />
+
+  <p>
+  <h1>0. 사전 환경 구성</h1>
+  </p>
+
+  <p>
+  <h3>0-1. <code>sudo</code> 를 사용해 <code>root</code> 계정으로 MySQL 클라이언트를 실행하여 서버에 접속한다</h3>
+  </p>
+
+  <p>
+  <pre><code class='language-bash'>sudo mysql</code></pre>
+  </p>
+
+  <hr />
+
+  <p>
+  <h3>0-2. MySQL 프롬프트에서 시험용 데이터베이스 생성</h3>
+  </p>
+
+  <p>
+  <pre><code class='language-sql'>CREATE DATABASE examdb;</code></pre>
+  </p>
+
+  <hr />
+
+  <p>
+  <h3>0-3. 시험 전용 계정 생성 및 권한 부여</h3>
+  </p>
+
+  <p>
+  <pre><code class='language-sql'>CREATE USER &#x27;examuser&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;Ex@m9Q2#L!!&#x27;;</code></pre>
+  </p>
+
+  <p>
+  <pre><code class='language-sql'>GRANT ALL PRIVILEGES ON examdb.* TO &#x27;examuser&#x27;@&#x27;localhost&#x27;;</code></pre>
+  </p>
+
+  <hr />
+
+  <p>
+  <h3>0-4. MySQL Workbench 에서 DB 접속설정</h3>
+  </p>
+
+  <ul>
+    <li>Hostname: <code>localhost</code></li>
+  </ul>
+
+  <ul>
+    <li>Port: <code>3308</code></li>
+  </ul>
+
+  <ul>
+    <li>Username: <code>examuser</code></li>
+  </ul>
+
+  <ul>
+    <li>Password: <code>Ex@m9Q2#L!!</code></li>
+  </ul>
+
+  <ul>
+    <li>Default Schema: <code>examdb</code></li>
+  </ul>
+
+  <hr />
+
+  <p>
+  <h2>0-5. 아래 문서에 있는 SQL 을 워크벤치에서 실행</h2>
+  </p>
+  <p>
+  <h3>[데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](seed_data.md)</h3>
+  </p>
+
+
+  <hr />
+
+  <p>
+  <h1>1. 문제해결 시나리오</h1>
+  </p>
+
+  <p>
+  <h2>공통 규칙</h2>
+  </p>
+
+  <ul>
+    <li>모든 해결은 <code>examdb</code> 데이터베이스(스키마) 에서 수행</li>
+  </ul>
+
+  <ul>
+    <li>Workbench에서 실행한 SQL은 제출물에 포함</li>
+  </ul>
+
+  <ul>
+    <li>각 문항은 “원인 분석 → 해결 SQL → 검증 SQL” 흐름을 갖추어야 함</li>
+  </ul>
+
+  <p>
+  <h2>문제 1. 운영 장애: 특정 사용자 삭제가 안 된다</h2>
+  </p>
+  <p>
+  <h3>상황</h3>
+  </p>
+
+  <p>운영팀이 <code>users</code> 테이블에 <code>id</code> 가 <code>10</code> 인 사용자를 탈퇴 처리하려고 DELETE 했는데 실패한다.</p>
+  <p>(외래키로 인해 삭제가 막히는 상황)</p>
+
+  <p>
+  <h3>요구사항</h3>
+  </p>
+
+  <p>1. DELETE 쿼리문을 작성해서 실행해보고 실패하는 정확한 원인(테이블/제약조건/연관 데이터) 을 로그로 확인</p>
+
+  <p>2. 운영 정책을 가정하여 아래 중 하나로 해결(선택)</p>
+
+  <ul>
+    <li>A안: 사용자 삭제 시 해당 사용자의 게시글/댓글도 함께 삭제되는 정책(= FK 옵션 On Delete 변경 전략 필요)</li>
+  </ul>
+
+  <ul>
+    <li>B안: 사용자 삭제 시 그 사용자의 게시글은 유지하되, 작성자 표시를 “탈퇴회원”으로 바꾸는 정책(= FK 옵션 On Delete 변경 후 게시글 조회시 user_id 처리 전략 필요)</li>
+  </ul>
+
+
+  <p>3. 해결 후 DELETE FROM users WHERE id=10; 이 정상 동작함을 검증 SQL로 증명</p>
+
+  <p>
+  <h3>평가 포인트</h3>
+  </p>
+
+  <ul>
+    <li>FK 구조 이해 / 운영 정책 선택 / 검증 쿼리</li>
+  </ul>
+
+  <p>
+  <h2>문제 2. 성능 장애: “일정기간 동안의 게시글 수 집계” 가 너무 느리다</h2>
+  </p>
+  <p>
+  <h3>상황</h3>
+  </p>
+
+  <p>운영 대시보드에서 아래 성격의 통계 쿼리가 느려서 타임아웃이 난다.</p>
+
+  <ul>
+    <li>2025년 12월 한달동안 작성된 총 게시글 수 집계</li>
+  </ul>
+
+  <p>
+  <h3>요구사항</h3>
+  </p>
+
+  <p>1. 쿼리 작성</p>
+
+  <p>2. <code>EXPLAIN</code> 구문을 통해 요구사항 1번에서 작성한 쿼리 실행이 왜 느린지 확인</p>
+
+  <p>3. 인덱스/쿼리 개선으로 성능 개선(개선 전/후 비교 제시)</p>
+
+  <ul>
+    <li>인덱스 추가가 필요하다면 근거 포함</li>
+    <li>불필요한 풀스캔이 줄어드는지 확인</li>
+  </ul>
+
+  <p>
+  <h3>평가 포인트</h3>
+  </p>
+
+  <ul>
+    <li>쿼리작성 / EXPLAIN 해석 / 인덱스 설계 근거</li>
+  </ul>
+
+  <p>
+  <h2>문제 3. 데이터 품질: 이메일 중복 데이터 정리 + 제약조건 강화</h2>
+  </p>
+  <p>
+  <h3>상황</h3>
+  </p>
+
+  <p>초기 서비스 운영시에는 사용자 이메일을 중복 허용했었다.</p>
+
+  <p>하지만 정책이 바뀜에 따라 사용자 이메일은 중복을 허용하지 않기로 했다.</p>
+
+  <p>
+  <h3>요구사항</h3>
+  </p>
+
+  <p>1. 이메일 중복 탐지 SQL 작성</p>
+
+  <p>2. 정리 정책을 택해 정리(예: 중복 중 가장 먼저 가입자만 남기고 나머지는 email을 NULL 처리, 또는 규칙 기반으로 변경)</p>
+
+  <p>3. 정리 후 <code>email</code> 컬럼에 <code>UNIQUE</code> 제약 추가</p>
+
+  <p>
+  <h3>평가 포인트</h3>
+  </p>
+
+  <ul>
+    <li>중복탐지 SQL / 중복데이터 정리과정 / email 컬럼에 UNIQUE 제약 추가</li>
+  </ul>
+
+  <p>
+  <h2>문제 4. 비정규화 도입: posts.comments_cnt 캐시 컬럼 설계</h2>
+  </p>
+  <p>
+  <h3>상황</h3>
+  </p>
+
+  <p>현재 게시글 목록에서 “댓글 수”를 함께 보여주고 있다.</p>
+
+  <p>게시글 오래된 순으로 조회하는 쿼리:</p>
+  <p>
+  <pre><code class='language-sql'>SELECT p2.*, count(c.id) AS comments_cnt from </p>
+<p>(SELECT p.id, p.title, u.nickname, p.created_at FROM posts AS p</p>
+<p>INNER JOIN users AS u ON p.user_id = u.id</p>
+<p>ORDER BY p.created_at ASC limit 20) AS p2</p>
+<p>LEFT JOIN comments AS c</p>
+<p>ON p2.id = c.post_id GROUP BY p2.id</code></pre>
+  </p>
+
+  <p>매 요청마다 <code>comments</code> 테이블을 <code>LEFT JOIN</code> / <code>COUNT(*)</code>로 계산하고 있어서 목록 조회가 느려졌다.</p>
+
+  <p>
+  <h3>요구사항</h3>
+  </p>
+
+  <p>1. posts 테이블에 댓글 수 컬럼(<code>comments_cnt</code>) 추가</p>
+
+  <p>2. 댓글 INSERT 시 comments_cnt 증가 SQL 작성</p>
+
+  <p>3. 댓글 DELETE 시 comments_cnt 감소 SQL 작성</p>
+
+  <p>4. 기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행 후 게시글 오래된 순으로 조회하는 쿼리를 comments 테이블 조인 없이 댓글 수 포함해서 조회 ( 컬럼:
+    <code>id</code>, <code>title</code>, <code>nickname</code>, <code>created_at</code>, <code>comments_cnt</code> )
+  </p>
+
+  <p>
+  <h3>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행:</h3>
+  </p>
+
+  <p>
+  <pre><code class='language-sql'>UPDATE posts p</p>
+<p>LEFT JOIN (</p>
+<p>  SELECT post_id, COUNT(*) AS cnt</p>
+<p>  FROM comments</p>
+<p>  GROUP BY post_id</p>
+<p>) c ON c.post_id = p.id</p>
+<p>SET p.comments_cnt = COALESCE(c.cnt, 0)</p>
+<p>WHERE p.id &gt;= 1;</code></pre>
+  </p>
+
+  <p>
+  <h3>평가 포인트</h3>
+  </p>
+
+  <ul>
+    <li>DDL / comments_cnt 증감 로직 정확성</li>
+  </ul>
+
+  <ul>
+    <li>마이그레이션 쿼리 실행으로 기존쿼리와 변경된 쿼리 comment_cnt 동일한지 확인</li>
+  </ul>
+
+</body>
+
+</html>
