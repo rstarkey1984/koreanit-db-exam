@@ -102,8 +102,8 @@ GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';
 - Default Schema: `examdb`
 
 
-## 0-5. 아래 문서에 있는 SQL 실행
-### [데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](seed_data.md)
+## 0-5. 아래 내용에 있는 SQL 실행
+### [데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](seed_data.sql)
 
 
 ---

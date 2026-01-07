@@ -1,4 +1,3 @@
-```sql
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS comments;
@@ -213,4 +212,3 @@ FROM (
     SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n < 100000
   ) SELECT n FROM seq
 ) t;
-```
