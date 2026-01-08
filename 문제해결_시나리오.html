@@ -452,7 +452,7 @@
     <section class="card" id="submission">
       <h2>제출물 규칙</h2>
       <ul>
-        <li>제출물은 MD 파일 형식으로 <code><a href="제출물.md" target="_blank">본인이름.md</a></code>
+        <li>제출물은 MD 파일 형식으로 <code><a href="학생제출물\이름.md" target="_blank">본인이름.md</a></code>
           으로 제출</li>
       </ul>
     </section>
@@ -623,4 +623,20 @@ LEFT JOIN (
   SELECT post_id, COUNT(*) AS cnt
   FROM comments
   GROUP BY post_id
-) c ON c.post_id = p_
+) c ON c.post_id = p.id
+SET p.comments_cnt = COALESCE(c.cnt, 0)
+WHERE p.id >= 1;</code></pre>
+
+      <h3>평가 포인트</h3>
+      <ul>
+        <li>comments_cnt 컬럼 추가 / 댓글 INSERT/DELETE 시 comments_cnt 증감 SQL / 초기 마이그레이션 SQL 실행</li>
+      </ul>
+    </section>
+
+    <footer>
+      &copy; 2026 데이터베이스 설계 및 SQL 문제해결 시나리오 평가 문서
+    </footer>
+  </div>
+</body>
+
+</html>
