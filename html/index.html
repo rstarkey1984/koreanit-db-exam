@@ -613,7 +613,7 @@ ON p2.id = c.post_id GROUP BY p2.id</code></pre>
         <li>개선된 목록 조회 SQL</li>
       </ol>
 
-      <h4>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행</h4>
+      <h4>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 예시</h4>
       <pre><code>UPDATE posts p
 LEFT JOIN (
   SELECT post_id, COUNT(*) AS cnt
