@@ -607,14 +607,10 @@ ON p2.id = c.post_id GROUP BY p2.id</code></pre>
       <h3>요구사항</h3>
       <ol>
         <li>posts 테이블에 댓글 수 컬럼(<code>comments_cnt</code>) 추가</li>
-        <li>댓글 INSERT 시 comments_cnt 증가 SQL 작성</li>
-        <li>댓글 DELETE 시 comments_cnt 감소 SQL 작성</li>
-        <li>
-          기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행 후
-          게시글 오래된 순으로 조회하는 쿼리를 comments 테이블 조인 없이 댓글 수 포함해서 조회
-          (컬럼: <code>id</code>, <code>title</code>, <code>nickname</code>, <code>created_at</code>,
-          <code>comments_cnt</code>)
-        </li>
+        <li>댓글 INSERT 시 posts.comments_cnt 증가 SQL 작성( 트랜잭션 사용 )</li>
+        <li>댓글 DELETE 시 posts.comments_cnt 감소 SQL 작성( 트랜잭션 사용 )</li>
+        <li>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행</li>
+        <li>개선된 목록 조회 SQL</li>
       </ol>
 
       <h4>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행</h4>
