@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>데이터베이스 설계 및 SQL 문제해결 시나리오 평가</title>
+
+  <!-- Pretendard (Korean-friendly) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/pretendard.min.css" />
+
+  <!-- Noto Sans KR fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255, 255, 255, 0.06);
+      --card2: rgba(255, 255, 255, 0.085);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.68);
+      --subtle: rgba(255, 255, 255, 0.55);
+      --accent: #7aa2ff;
+      --accent2: #a7f3d0;
+      --codebg: rgba(0, 0, 0, 0.35);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      --radius: 18px;
+      --radius2: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 20% 10%, rgba(122, 162, 255, 0.25), transparent 60%),
+        radial-gradient(700px 480px at 85% 20%, rgba(167, 243, 208, 0.18), transparent 55%),
+        radial-gradient(900px 520px at 50% 110%, rgba(122, 162, 255, 0.14), transparent 60%),
+        var(--bg);
+      font-family: Pretendard, "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height: 1.72;
+      letter-spacing: -0.2px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 36px 18px 64px;
+    }
+
+    header.hero {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 26px 26px 22px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(122, 162, 255, 0.15);
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(26px, 3.4vw, 36px);
+      line-height: 1.25;
+      letter-spacing: -0.6px;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 70ch;
+    }
+
+    .meta-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 860px) {
+      .meta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .meta {
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px 12px;
+    }
+
+    .meta .label {
+      font-size: 12px;
+      color: var(--subtle);
+      margin-bottom: 6px;
+    }
+
+    .meta .value {
+      font-weight: 650;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    nav.toc {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35);
+      padding: 16px 18px;
+    }
+
+    nav.toc h2 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: -0.2px;
+    }
+
+    .toc ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 18px;
+    }
+
+    @media (max-width: 680px) {
+      .toc ul {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .toc li {
+      color: var(--muted);
+    }
+
+    .toc a {
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .toc a:hover {
+      color: var(--accent);
+    }
+
+    section.card {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.04));
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      padding: 22px 22px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.4px;
+    }
+
+    h3 {
+      margin: 18px 0 10px;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    h4 {
+      margin: 14px 0 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.90);
+    }
+
+    p {
+      margin: 10px 0;
+      color: var(--muted);
+    }
+
+    ul,
+    ol {
+      margin: 10px 0;
+      color: var(--muted);
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .note {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius2);
+      padding: 14px 14px;
+      margin: 12px 0;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .note strong {
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
+      background: rgba(0, 0, 0, 0.30);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    pre {
+      margin: 12px 0;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--codebg);
+      overflow: auto;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    pre code {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      color: rgba(255, 255, 255, 0.90);
+      font-size: 13px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.86);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .score-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-top: 10px;
+    }
+
+    .score-table th,
+    .score-table td {
+      padding: 12px 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .score-table thead th {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.90);
+      font-weight: 650;
+    }
+
+    .score-table tbody td {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.10);
+      margin: 16px 0;
+    }
+
+    footer {
+      margin-top: 26px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="hero" id="top">
+      <div class="kicker"><span class="dot"></span> 실습 기반 문제해결 시나리오 평가 문서</div>
+      <h1>데이터베이스 설계 및 SQL 문제해결 시나리오 평가</h1>
+      <p class="lead">
+        본 평가는 데이터베이스의 단순 SQL 문법 암기가 아닌, 실제 운영 환경에서 발생할 수 있는 문제 상황을 분석하고
+        SQL을 활용하여 이를 해결할 수 있는 능력을 종합적으로 평가하는 것을 목적으로 한다.
+      </p>
+
+      <div class="meta-grid" aria-label="요약 정보">
+        <div class="meta">
+          <div class="label">과목</div>
+          <div class="value">데이터베이스 설계 / SQL</div>
+        </div>
+        <div class="meta">
+          <div class="label">평가 유형</div>
+          <div class="value">실습 기반 문제해결 시나리오</div>
+        </div>
+        <div class="meta">
+          <div class="label">시험 시간</div>
+          <div class="value">3시간</div>
+        </div>
+        <div class="meta">
+          <div class="label">총점</div>
+          <div class="value">100점</div>
+        </div>
+      </div>
+
+      <div class="pill-row" aria-label="키워드">
+        <span class="pill">원인 분석 → 해결 → 검증</span>
+        <span class="pill">FK / 성능 / 데이터 품질 / 비정규화</span>
+        <span class="pill">MySQL CLI + Workbench</span>
+        <span class="pill">WSL Ubuntu 24 + MySQL 8.0.44</span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="목차">
+      <h2>목차</h2>
+      <ul>
+        <li><a href="#overview">평가 개요</a></li>
+        <li><a href="#scoring">채점 기준</a></li>
+        <li><a href="#submission">제출물 규칙</a></li>
+        <li><a href="#env">시험 환경</a></li>
+        <li><a href="#setup">0. 사전 환경 구성</a></li>
+        <li><a href="#rules">공통 규칙</a></li>
+        <li><a href="#q1">문제 1. FK 삭제 문제</a></li>
+        <li><a href="#q2">문제 2. 성능 문제</a></li>
+        <li><a href="#q3">문제 3. 데이터 품질</a></li>
+        <li><a href="#q4">문제 4. 비정규화</a></li>
+      </ul>
+    </nav>
+
+    <section class="card" id="overview">
+      <h2>평가 개요</h2>
+      <div class="note">
+        본 평가는 <strong>사전 환경 구성부터 문제 해결까지 포함된 실습 중심 평가</strong>로 3시간으로 구성한다.
+      </div>
+      <ul>
+        <li>운영 중인 게시판 서비스의 데이터베이스를 가정한다.</li>
+        <li>수험자는 제공된 스키마 및 더미데이터를 기반으로 문제 상황을 해결한다.</li>
+        <li>데이터베이스 생성 및 권한 부여는 서버 터미널(MySQL CLI) 환경에서 수행하며, 이후 실제 데이터 작업과 문제 해결은 MySQL Workbench를 사용한다.</li>
+        <li>모든 문제는 실제 실무 환경에서 발생 가능한 시나리오를 기반으로 한다.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="scoring">
+      <h2>채점 기준</h2>
+      <div class="note">
+        본 평가는 SQL 문법 암기가 아닌 운영 환경에서의 문제 분석 능력과 해결 과정을 평가한다.<br />
+        정답 여부뿐 아니라 <strong>접근 방식·근거·검증 SQL</strong>을 함께 채점한다.
+      </div>
+
+      <h3>총점: 100점</h3>
+      <table class="score-table" role="table" aria-label="배점표">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>배점</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>사전 환경 구성</td>
+            <td>20점</td>
+            <td>수험자가 완료하지 못한 경우 감독관이 최소 실행 환경 제공</td>
+          </tr>
+          <tr>
+            <td>문제 1 (FK 삭제 문제)</td>
+            <td>20점</td>
+            <td>운영 정책 선택 및 검증 포함</td>
+          </tr>
+          <tr>
+            <td>문제 2 (성능 문제)</td>
+            <td>20점</td>
+            <td>EXPLAIN 해석 및 개선 전/후 비교</td>
+          </tr>
+          <tr>
+            <td>문제 3 (데이터 품질)</td>
+            <td>20점</td>
+            <td>중복 정리 후 UNIQUE 제약 추가</td>
+          </tr>
+          <tr>
+            <td>문제 4 (비정규화)</td>
+            <td>20점</td>
+            <td>comments_cnt 증감 및 마이그레이션</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="submission">
+      <h2>제출물 규칙</h2>
+      <ul>
+        <li>제출물은 MD 파일 형식으로 <code><a href="이름.md" target="_blank">본인이름.md</a></code>
+          으로 제출</li>
+      </ul>
+    </section>
+
+    <section class="card" id="env">
+      <h2>시험 환경</h2>
+      <ul>
+        <li>OS: <code>WSL Ubuntu 24</code></li>
+        <li>DBMS: <code>MySQL 8.0.44</code></li>
+        <li>DB 서버 접속 방식</li>
+        <ul>
+          <li>데이터베이스(스키마) 설정: 터미널(<code>MySQL 클라이언트</code>)</li>
+          <li>실습 및 문제 해결: <code>MySQL Workbench</code></li>
+        </ul>
+        <li>클라이언트 도구: MySQL Workbench (로컬 PC)</li>
+      </ul>
+    </section>
+
+    <section class="card" id="setup">
+      <h2>0. 사전 환경 구성</h2>
+
+      <h3>0-1. <code>sudo</code> 를 사용해 <code>root</code> 계정으로 MySQL 클라이언트를 실행하여 서버에 접속한다</h3>
+      <pre><code>sudo mysql</code></pre>
+
+      <h3>0-2. MySQL 프롬프트에서 시험용 데이터베이스 생성</h3>
+      <pre><code>CREATE DATABASE examdb;</code></pre>
+
+      <h3>0-3. 시험 전용 계정 생성 및 권한 부여</h3>
+      <pre><code>CREATE USER 'examuser'@'localhost' IDENTIFIED BY 'Ex@m9Q2#L!!';</code></pre>
+      <pre><code>GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';</code></pre>
+
+      <h3>0-4. MySQL Workbench 에서 DB 접속설정</h3>
+      <ul>
+        <li>Hostname: <code>localhost</code></li>
+        <li>Port: <code>3308</code></li>
+        <li>Username: <code>examuser</code></li>
+        <li>Password: <code>Ex@m9Q2#L!!</code></li>
+        <li>Default Schema: <code>examdb</code></li>
+      </ul>
+
+      <h3>0-5. 아래 내용에 있는 SQL 실행</h3>
+      <div class="note">
+        <strong>데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization &amp; Seeding)</strong>:
+        <code><a href="https://github.com/rstarkey1984/koreanit-db-exam/blob/main/html/seed_data.sql" target="_blank">seed_data.sql</a></code>
+      </div>
+    </section>
+
+    <section class="card" id="rules">
+      <h2>문제해결 시나리오</h2>
+      <h3>공통 규칙</h3>
+      <ul>
+        <li>모든 문제 해결은 <code>examdb</code> 데이터베이스(스키마)에서 수행</li>
+        <li>각 문항은 <strong>원인 분석 → 해결 방법 → 검증</strong> 흐름을 갖추어야 함</li>
+      </ul>
+    </section>
+
+    <section class="card" id="q1">
+      <h2>문제 1. 운영 장애: 특정 사용자 삭제가 안 된다</h2>
+      <h3>상황</h3>
+      <p>
+        운영팀이 <code>users</code> 테이블에 <code>id</code> 가 <code>10</code> 인 사용자를 탈퇴 처리하려고 DELETE 했는데 실패한다.
+        (외래키로 인해 삭제가 막히는 상황)
+      </p>
+
+      <h3>요구사항</h3>
+      <ol>
+        <li>DELETE 쿼리문을 작성해서 실행해보고 실패하는 정확한 원인(테이블/제약조건/연관 데이터)을 로그로 확인</li>
+        <li>운영 정책을 가정하여 아래 중 하나로 해결(선택)
+          <ul>
+            <li>A안: 사용자 삭제 시 해당 사용자의 게시글/댓글도 함께 삭제되는 정책(= FK 옵션 On Delete 변경 전략 필요)</li>
+            <li>B안: 사용자 삭제 시 그 사용자의 게시글은 유지하되, 작성자 표시를 “탈퇴회원”으로 바꾸는 정책(= FK 옵션 On Delete 변경 후 게시글 조회시 user_id 처리 전략 필요)
+            </li>
+          </ul>
+        </li>
+        <li>해결 후 <code>DELETE FROM users WHERE id=10;</code> 이 정상 동작함을 검증 SQL로 증명</li>
+      </ol>
+
+      <h3>평가 포인트</h3>
+      <ul>
+        <li>FK 구조 이해 / 운영 정책 선택 / 검증 쿼리</li>
+      </ul>
+    </section>
+
+    <section class="card" id="q2">
+      <h2>문제 2. 성능 장애: “일정기간 동안의 게시글 수 집계” 가 너무 느리다</h2>
+      <h3>상황</h3>
+      <p>
+        운영 대시보드에서 아래 성격의 통계 쿼리가 느려서 타임아웃이 난다.
+      </p>
+      <ul>
+        <li>2025년 12월 한달동안 작성된 총 게시글 수 집계</li>
+      </ul>
+
+      <h3>요구사항</h3>
+      <ol>
+        <li>쿼리 작성</li>
+        <li><code>EXPLAIN</code> 구문을 통해 요구사항 1번에서 작성한 쿼리 실행이 왜 느린지 확인</li>
+        <li>인덱스/쿼리 개선으로 성능 개선(개선 전/후 비교 제시)
+          <ul>
+            <li>인덱스 추가가 필요하다면 근거 포함</li>
+            <li>불필요한 풀스캔이 줄어드는지 확인</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3>평가 포인트</h3>
+      <ul>
+        <li>쿼리작성 / EXPLAIN 해석 / 인덱스 설계 근거</li>
+      </ul>
+    </section>
+
+    <section class="card" id="q3">
+      <h2>문제 3. 데이터 품질: 이메일 중복 데이터 정리 + 제약조건 강화</h2>
+      <h3>상황</h3>
+      <p>
+        초기 서비스 운영시에는 사용자 이메일을 중복 허용했었다.<br />
+        하지만 정책이 바뀜에 따라 사용자 이메일은 중복을 허용하지 않기로 했다.
+      </p>
+
+      <h3>요구사항</h3>
+      <ol>
+        <li>이메일 중복 탐지 SQL 작성</li>
+        <li>정리 정책을 택해 정리(예: 중복 중 가장 먼저 가입자만 남기고 나머지는 email을 NULL 처리, 또는 규칙 기반으로 변경)</li>
+        <li>정리 후 <code>email</code> 컬럼에 <code>UNIQUE</code> 제약 추가</li>
+      </ol>
+
+      <h3>평가 포인트</h3>
+      <ul>
+        <li>중복탐지 SQL / 중복데이터 정리과정 / email 컬럼에 UNIQUE 제약 추가</li>
+      </ul>
+    </section>
+
+    <section class="card" id="q4">
+      <h2>문제 4. 비정규화 도입: posts.comments_cnt 캐시 컬럼 설계</h2>
+      <h3>상황</h3>
+      <p>
+        현재 게시글 목록에서 “댓글 수”를 함께 보여주고 있다.
+      </p>
+
+      <h4>게시글 오래된 순으로 조회하는 쿼리</h4>
+      <pre><code>SELECT p2.*, count(c.id) AS comments_cnt from 
+(SELECT p.id, p.title, u.nickname, p.created_at FROM posts AS p
+INNER JOIN users AS u ON p.user_id = u.id
+ORDER BY p.created_at ASC limit 20) AS p2
+LEFT JOIN comments AS c
+ON p2.id = c.post_id GROUP BY p2.id</code></pre>
+
+      <p>
+        매 요청마다 <code>comments</code> 테이블을 <code>LEFT JOIN</code> / <code>COUNT(*)</code>로 계산하고 있어서 목록 조회가 느려졌다.
+      </p>
+
+      <h3>요구사항</h3>
+      <ol>
+        <li>posts 테이블에 댓글 수 컬럼(<code>comments_cnt</code>) 추가</li>
+        <li>댓글 INSERT 시 comments_cnt 증가 SQL 작성</li>
+        <li>댓글 DELETE 시 comments_cnt 감소 SQL 작성</li>
+        <li>
+          기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행 후
+          게시글 오래된 순으로 조회하는 쿼리를 comments 테이블 조인 없이 댓글 수 포함해서 조회
+          (컬럼: <code>id</code>, <code>title</code>, <code>nickname</code>, <code>created_at</code>,
+          <code>comments_cnt</code>)
+        </li>
+      </ol>
+
+      <h4>기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행</h4>
+      <pre><code>UPDATE posts p
+LEFT JOIN (
+  SELECT post_id, COUNT(*) AS cnt
+  FROM comments
+  GROUP BY post_id
+) c ON c.post_id = p.id
+SET p.comments_cnt = COALESCE(c.cnt, 0)
+WHERE p.id >= 1;</code></pre>
+
+      <h3>평가 포인트</h3>
+      <ul>
+        <li>comments_cnt 컬럼 추가 / 댓글 INSERT/DELETE 시 comments_cnt 증감 SQL / 초기 마이그레이션 SQL 실행</li>
+      </ul>
+    </section>
+
+    <footer>
+      &copy; 2026 데이터베이스 설계 및 SQL 문제해결 시나리오 평가 문서
+    </footer>
+  </div>
+</body>
+
+</html>
