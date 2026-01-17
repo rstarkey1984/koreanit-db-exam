@@ -50,7 +50,7 @@ INSERT INTO users (username, email, password, nickname)
 SELECT
   CONCAT('user', n),
   CASE
-    WHEN n IN (3, 7, 15, 42) THEN 'same@test.com'
+    WHEN n IN (3, 7, 15, 42, 105) THEN 'same@test.com'
     ELSE CONCAT('user', n, '@test.com')
   END,
   '$2a$10$abcdefghijklmnopqrstuvwxyz1234567890abcdef', -- 더미 bcrypt 해시
