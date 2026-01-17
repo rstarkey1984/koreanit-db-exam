@@ -207,9 +207,9 @@ ON p2.id = c.post_id GROUP BY p2.id
 
 1. posts 테이블에 댓글 수 컬럼(`comments_cnt`) 추가
 
-2. 댓글 INSERT 시 comments_cnt 증가 SQL 작성
+2. 댓글(comments 테이블) INSERT 시 posts.comments_cnt 증가 SQL 작성
 
-3. 댓글 DELETE 시 comments_cnt 감소 SQL 작성
+3. 댓글(comments 테이블) DELETE 시 posts.comments_cnt 감소 SQL 작성
 
 4. 기존 데이터에 대해 댓글 수를 일괄 채우는 초기 마이그레이션 SQL 실행 후 게시글 오래된 순으로 조회하는 쿼리를 comments 테이블 조인 없이 댓글 수 포함해서 조회 ( 컬럼: `id`, `title`, `nickname`, `created_at`, `comments_cnt` )
 
