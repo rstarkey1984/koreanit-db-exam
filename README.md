@@ -129,9 +129,9 @@ GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';
 
 2. 운영 정책을 가정하여 아래 중 하나로 해결(선택)
 
-    - A안: 사용자 삭제 시 해당 사용자의 게시글/댓글도 함께 삭제되는 정책(= FK 옵션 On Delete 변경 전략 필요)
+    - A안: 사용자 삭제 시 해당 사용자의 게시글/댓글도 함께 삭제되는 정책(= FK 옵션 On Delete 옵션 검토)
 
-    - B안: 사용자 삭제 시 그 사용자의 게시글은 유지하되, 작성자 표시를 “탈퇴회원”으로 바꾸는 정책(= FK 옵션 On Delete 변경 후 게시글 조회시 user_id 처리 전략 필요)
+    - B안: 사용자 삭제 시 그 사용자의 게시글은 유지하되, 작성자 표시를 “탈퇴회원”으로 바꾸는 정책(= FK 옵션 On Delete 옵션 검토 및 게시글 조회시 posts.user_id null 처리 전략 필요)
 
 
 3. 해결 후 DELETE FROM users WHERE id=10; 이 정상 동작함을 검증 SQL로 증명
