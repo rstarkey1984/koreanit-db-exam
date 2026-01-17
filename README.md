@@ -45,7 +45,7 @@ SQL을 활용하여 이를 해결할 수 있는 능력을 종합적으로 평가
 
 ## 제출물 규칙
 
-- 제출물은 MD 파일 형식으로 [`본인이름.md`](/학생제출물/이름.md) 로 제출
+- 제출물은 MD 파일 형식으로 [`본인이름.md`](/html/이름.md) 로 제출
 
 ## 시험 환경
 
@@ -103,7 +103,7 @@ GRANT ALL PRIVILEGES ON examdb.* TO 'examuser'@'localhost';
 
 
 ## 0-5. 아래 내용에 있는 SQL 실행
-### [데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](seed_data.sql)
+### [데이터베이스 초기화 및 시드 데이터 생성 (DB Initialization & Seeding)](html/seed_data.sql)
 
 
 ---
