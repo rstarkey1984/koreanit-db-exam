@@ -629,7 +629,8 @@ WHERE p.id >= 1;</code></pre>
 
       <h3>평가 포인트</h3>
       <ul>
-        <li>comments_cnt 컬럼 추가 / 댓글 INSERT/DELETE 시 comments_cnt 증감 SQL / 초기 마이그레이션 SQL 실행</li>
+        <li>DDL 쿼리 / comments_cnt 증감 로직 쿼리 정확성</li>
+        <li>기존쿼리(join comments)와 변경된쿼리(comments 테이블 join없이) 실행 후 comments_cnt 동일한지 확인</li>
       </ul>
     </section>
 

@@ -228,7 +228,7 @@ WHERE p.id >= 1;
 
 ## 평가 포인트
 
-- DDL / comments_cnt 증감 로직 정확성
+- DDL 쿼리 / comments_cnt 증감 로직 쿼리 정확성
 
-- 마이그레이션 쿼리 실행으로 기존쿼리와 변경된 쿼리 comment_cnt 동일한지 확인
+- 기존쿼리(join comments)와 변경된쿼리(comments 테이블 join없이) 실행 후 comments_cnt 동일한지 확인
 
